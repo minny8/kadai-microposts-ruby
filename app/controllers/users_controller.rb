@@ -18,6 +18,9 @@ class UsersController < ApplicationController
   @user = User.new(user_params)
 
     if @user.save
+      email = user_params[:email].downcase
+      @user = User.find_by(email: email)
+      session[:user_id] = @user.id
       flash[:success] = 'ユーザを登録しました。'
       redirect_to @user
     else
@@ -36,6 +39,16 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
     @followers = @user.followers.page(params[:page])
     counts(@user)
+  end
+  
+  def favorites
+    @user = User.find(params[:id])
+    @microposts = @user.save_as_favorites.page(params[:page])
+  end
+  
+  def likes
+    @user = User.find(params[:id])
+    @microposts = @user.save_as_favorites.page(params[:page])
   end
   
   private
